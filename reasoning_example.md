@@ -68,7 +68,7 @@ To implement these methods effectively:
 This is great but I'd like to better understand the model's thinking or reasoning behind he answer it provided. It might be just me but I'm a curious type!
 Follow onto the next example on how to ask the model about their thinking.
 
-# Prompt model and ask for context as well
+## Prompt model and ask for reasoning on the answer
 
 This time when we ask the question `Find the fastest way for a seller to visit all the cities in their region`, lets also ask the model how it arrived at its answer:
 
@@ -154,9 +154,73 @@ Genetic Algorithms can provide better solutions than Nearest Neighbor but requir
   
 - Computational resources: Simpler methods require less computational power but may provide less optimal results. More complex algorithms can offer better solutions at the cost of increased processing time and memory usage.
 
-- Time constraints: If time is of the essence, a quick approximation (like Nearest Neighbor) might be preferred over a more computationally intensive method that guarantees better, though not necessarily the best, solution. 
+- Time constraints: If time is of the essence, a quick approximation (like Nearest Neighbor) might be preferred over a more computationally intensive method that guarantees better, though not necessarily the best, solution.
 
 In conclusion, the 'fastest' method depends on the specific context and requirements of the problem at hand. For a swift yet approximate solution, the Nearest Neighbor Algorithm is recommended. For situations where slightly better results are acceptable and more computational resources are available, Genetic Algorithms would be a suitable choice.
 ```
+
+Now,  we are given "Thinking" of the model behind the answer in-addition to the answer or response. Exactly what we asked for. 
+
+However, in the code snippet above you can see that we had to make a substantial and intricate change to the prompt for the model to receive its "Thinking" in the response. This is not something we want to have to do every time we want better understanding of an answer from the model.  Wouldn't it be great if we could be abstracted from this and only require to provide the question or prompt. This is where the [granite-io library](https://github.com/ibm-granite/granite-io) comes into play. Follow onto the next section to see how it can simplify your task.
+
+## Use granite-io to help prompting the model
+
+Lets now look at how the code snippet looks when using `granite-io` library to do the heavy lifting:
+
+```
+from granite_io import make_backend, make_io_processor
+from granite_io.types import ChatCompletionInputs, UserMessage
+
+model_name = "granite3.2:8b"
+io_processor = make_io_processor(
+    model_name, backend=make_backend("openai", {"model_name": model_name})
+)
+question = "Find the fastest way for a seller to visit all the cities in their region"
+messages = [UserMessage(content=question)]
+
+# With Thinking
+outputs = io_processor.create_chat_completion(
+    ChatCompletionInputs(messages=messages, thinking=True)
+)
+print("------ WITH THINKING ------")
+print(">> Thoughts:")
+print(outputs.results[0].next_message.reasoning_content)
+print(">> Response:")
+print(outputs.results[0].next_message.content)
+```
+
+The poutput returned from the model can now be broken up, thanks to how the library returns it:
+
+```shell
+------ WITH THINKING ------
+
+>> Thoughts:
+This problem seems to be a variant of the well-known Traveling Salesman Problem (TSP), which involves finding the shortest possible route that visits each city once and returns to the origin. However, the question asks for the "fastest" way, which suggests we might need to consider additional factors like road conditions, traffic patterns, real-time updates, etc., than just geographical distance. 
+
+To solve this effectively, I'd need to incorporate elements of optimization algorithms (like Genetic Algorithms or Ant Colony Optimization typically used for TSP), real-time data feed integration (for traffic information), and perhaps machine learning models to predict optimal routes based on historical data.
+
+Given the complexity, creating a fully functional system would require developing software and integrating various APIs, which is beyond the scope of this platform. Instead, I'll outline a high-level approach and suggest existing tools or services that can be utilized.
+
+>> Response:
+To find the fastest way for a seller to visit all cities in their region, you'd essentially want to solve a variant of the Traveling Salesman Problem (TSP), considering factors beyond just geographical distance such as real-time traffic conditions. Here’s a high-level approach to tackle this:
+
+1. **Data Collection**: Gather data for all cities in the region including their exact locations (latitude and longitude) and any initial known information about road infrastructure. 
+
+2. **Real-Time Traffic Integration**: Incorporate real-time traffic data. This can be achieved by integrating APIs from services like Google Maps API, HERE Routing API, or OpenStreetMap with Overpass Turbo, which all offer robust traffic and route optimization features. These tools not only provide distance and time for different routes but also account for current traffic conditions.
+
+3. **Historical Traffic Data**: Utilize historical data to predict future traffic patterns. Machine learning models, such as regression or neural network models, can be trained on past traffic data to forecast optimal travel times at different times of the day/week.
+
+4. **Route Optimization Algorithm**: Implement an optimization algorithm. Genetic Algorithms, Ant Colony Optimization, or even simpler algorithms like nearest neighbor combined with 2-opt improvement can be used here. These will help in finding the most efficient route considering traffic conditions and possibly other constraints (like avoiding toll roads, certain routes due to construction etc.).
+
+5. **Iterative Refinement**: Start with a preliminary route, perhaps generated by a heuristic method (like nearest neighbor), then iteratively refine it using the optimization algorithm, recalculating based on updated real-time traffic information.
+
+6. **Consider Vehicle Specifics**: If possible, factor in specific vehicle details like average speed, fuel efficiency (to minimize stops) if aiming to minimize travel time/cost instead of just distance.
+
+7. **User Interface**: Finally, create a user-friendly interface where the seller can input destinations and receive optimized routes. This could be a mobile app or a web application, providing options like daily re-planning based on updated traffic forecasts.
+
+While it's not feasible to develop such a system in this text-based environment, the outlined strategy provides a roadmap for software developers looking to create a solution for efficient city-to-city travel planning, integrating real-time data and optimization techniques.
+```
+
+
 
  
