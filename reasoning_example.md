@@ -189,7 +189,7 @@ print(">> Response:")
 print(outputs.results[0].next_message.content)
 ```
 
-The poutput returned from the model can now be broken up, thanks to how the library returns it:
+The output returned from the model can now be broken up, thanks to how the library returns it:
 
 ```shell
 ------ WITH THINKING ------
@@ -221,6 +221,13 @@ To find the fastest way for a seller to visit all cities in their region, you'd 
 While it's not feasible to develop such a system in this text-based environment, the outlined strategy provides a roadmap for software developers looking to create a solution for efficient city-to-city travel planning, integrating real-time data and optimization techniques.
 ```
 
+# What value does the `granite-io` library give you?
+
+Well, if we use the example of questioning the model about the `Find the fastest way for a seller to visit all the cities in their region`, and also asking how it arrived at its answer:
+
+- Input Processor: Require setting parameter `thinking=True` and the library will generate the prompt required for the model to understand that it needs to also provide Thinking/Reasoning. Remember the ugly prompt! Input Processor)
+- Output Processor: It parses the model output and separates the thinking and response parts for you
+- IO Processor: It wraps the input and output capability in 1 processor for you. **Note:** the library will also provide the capability to use input processors and output processor independent of the IO processor.
 
 
  
