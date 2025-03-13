@@ -1,10 +1,14 @@
-# Granite 3.2 Reasoning Example
+# Granite 3.2 Reasoning
 
 Granite 3.2 provided new capability like Thinking or reasoning. <TODO: add to>
 
-## Prompt the model
+## Reasoning Example
 
-Lets start with sample code snippet below to ask `Granite 3.2 8b` model the following question `Find the fastest way for a seller to visit all the cities in their region`:
+Lets ask `Granite 3.2 8b` model the following question `Find the fastest way for a seller to visit all the cities in their region` and then work towards how to ask how it reasoned or thought about its answer. 
+
+### Prompt the model
+
+Lets start with a simple sample code snippet below :
 
 ```py
 import openai
@@ -68,7 +72,7 @@ To implement these methods effectively:
 This is great but I'd like to better understand the model's thinking or reasoning behind he answer it provided. It might be just me but I'm a curious type!
 Follow onto the next example on how to ask the model about their thinking.
 
-## Prompt model and ask for reasoning on the answer
+### Prompt model and ask for reasoning on the answer
 
 This time when we ask the question `Find the fastest way for a seller to visit all the cities in their region`, lets also ask the model how it arrived at its answer:
 
@@ -163,7 +167,7 @@ Now,  we are given "Thinking" of the model behind the answer in-addition to the 
 
 However, in the code snippet above you can see that we had to make a substantial and intricate change to the prompt for the model to receive its "Thinking" in the response. This is not something we want to have to do every time we want better understanding of an answer from the model.  Wouldn't it be great if we could be abstracted from this and only require to provide the question or prompt. This is where the [granite-io library](https://github.com/ibm-granite/granite-io) comes into play. Follow onto the next section to see how it can simplify your task.
 
-## Use granite-io to help prompting the model
+### Use granite-io to help prompting the model
 
 Lets now look at how the code snippet looks when using `granite-io` library to do the heavy lifting:
 
@@ -221,7 +225,7 @@ To find the fastest way for a seller to visit all cities in their region, you'd 
 While it's not feasible to develop such a system in this text-based environment, the outlined strategy provides a roadmap for software developers looking to create a solution for efficient city-to-city travel planning, integrating real-time data and optimization techniques.
 ```
 
-# What value does the `granite-io` library give you?
+## What value does the `granite-io` library give you?
 
 Well, if we use the example of questioning the model about the `Find the fastest way for a seller to visit all the cities in their region`, and also asking how it arrived at its answer:
 
