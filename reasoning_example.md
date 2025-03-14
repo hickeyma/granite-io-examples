@@ -1,6 +1,7 @@
 # Granite 3.2 Reasoning
 
-Granite 3.2 provided new capability like Thinking or reasoning. <TODO: add to>
+Granite 3.2 provided lots of cool capabilities like [chain-of-thought (CoT)](https://www.ibm.com/think/topics/chain-of-thoughts) reasoning, document understanding etc. In this example, we will investigate how to use
+CoT reasoning to underastnd better how the model answered a query. The example will first cover how to do reasoning with the model in a vanilla fashion and then how to simplify it using the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library.
 
 ## Reasoning Example
 
@@ -8,7 +9,7 @@ Lets ask `Granite 3.2 8b` model the following question `Find the fastest way for
 
 ### Prompt the model
 
-Lets start with a simple sample code snippet below :
+First off, lets start with a simple sample code snippet below to ask the Granite 3.2 model:
 
 ```py
 import openai
@@ -70,7 +71,7 @@ To implement these methods effectively:
 ```
 
 This is great but I'd like to better understand the model's thinking or reasoning behind he answer it provided. It might be just me but I'm a curious type!
-Follow onto the next example on how to ask the model about their thinking.
+Follow onto the next example on how to ask the model about its reasoning.
 
 ### Prompt model and ask for reasoning on the answer
 
@@ -107,7 +108,7 @@ for choice in result.choices:
     print(f"{choice.text}\n")
 ```
 
-Now the response from the model is far more detailed and nuanced around how it arrived at its answer:
+Now the response from the model is far more detailed and explains around how it arrived at its answer (it provides a "thought process" part):
 
 ```shell
 Here is my thought process:
@@ -163,13 +164,13 @@ Genetic Algorithms can provide better solutions than Nearest Neighbor but requir
 In conclusion, the 'fastest' method depends on the specific context and requirements of the problem at hand. For a swift yet approximate solution, the Nearest Neighbor Algorithm is recommended. For situations where slightly better results are acceptable and more computational resources are available, Genetic Algorithms would be a suitable choice.
 ```
 
-Now,  we are given "Thinking" of the model behind the answer in-addition to the answer or response. Exactly what we asked for. 
+The updated prompt show how you cabn request reasoning from the model and to output to a part of the overall response.
 
-However, in the code snippet above you can see that we had to make a substantial and intricate change to the prompt for the model to receive its "Thinking" in the response. This is not something we want to have to do every time we want better understanding of an answer from the model.  Wouldn't it be great if we could be abstracted from this and only require to provide the question or prompt. This is where the [granite-io library](https://github.com/ibm-granite/granite-io) comes into play. Follow onto the next section to see how it can simplify your task.
+However, in the code snippet above you can see that we had to make a substantial and intricate change to the prompt for the model to receive reasoning in the response. This is not something we want to have to do every time we want better understanding of an answer from the model.  Wouldn't it be great if we could be abstracted from this and only require to provide the question or prompt. This is where the [Grabite IO Processing](https://github.com/ibm-granite/granite-io) library comes into play. Follow onto the next section to see how it can simplify your task.
 
-### Use granite-io to help prompting the model
+### Use granite-io to help with reasoning
 
-Lets now look at how the code snippet looks when using `granite-io` library to do the heavy lifting:
+Here is how the code snippet looks when using `granite-io` library to do the heavy lifting:
 
 ```
 from granite_io import make_backend, make_io_processor
@@ -182,22 +183,22 @@ io_processor = make_io_processor(
 question = "Find the fastest way for a seller to visit all the cities in their region"
 messages = [UserMessage(content=question)]
 
-# With Thinking
 outputs = io_processor.create_chat_completion(
     ChatCompletionInputs(messages=messages, thinking=True)
 )
-print("------ WITH THINKING ------")
 print(">> Thoughts:")
 print(outputs.results[0].next_message.reasoning_content)
 print(">> Response:")
 print(outputs.results[0].next_message.content)
 ```
 
-The output returned from the model can now be broken up, thanks to how the library returns it:
+Gone is the long unwielding prompt to be replaced a more easily maintable and understandable way to:
+- Set the prompt
+- Request reasoning (`thinking=true`)
+
+The output returned from the model is now as follows:
 
 ```shell
------- WITH THINKING ------
-
 >> Thoughts:
 This problem seems to be a variant of the well-known Traveling Salesman Problem (TSP), which involves finding the shortest possible route that visits each city once and returns to the origin. However, the question asks for the "fastest" way, which suggests we might need to consider additional factors like road conditions, traffic patterns, real-time updates, etc., than just geographical distance. 
 
@@ -225,13 +226,17 @@ To find the fastest way for a seller to visit all cities in their region, you'd 
 While it's not feasible to develop such a system in this text-based environment, the outlined strategy provides a roadmap for software developers looking to create a solution for efficient city-to-city travel planning, integrating real-time data and optimization techniques.
 ```
 
-## What value does the `granite-io` library give you?
+The output is abstracted into its different parts of:
+- Response
+- Reasoning (`Thoughts:`)
 
-Well, if we use the example of questioning the model about the `Find the fastest way for a seller to visit all the cities in their region`, and also asking how it arrived at its answer:
+## Conclusion
 
-- Input Processor: Require setting parameter `thinking=True` and the library will generate the prompt required for the model to understand that it needs to also provide Thinking/Reasoning. Remember the ugly prompt! Input Processor)
-- Output Processor: It parses the model output and separates the thinking and response parts for you
-- IO Processor: It wraps the input and output capability in 1 processor for you. **Note:** the library will also provide the capability to use input processors and output processor independent of the IO processor.
-
+- You can prompt a Granite 3.2 model asking for CoT reasoning on its answer
+- However, this requires creating quite an unwielding prompt which is error prone and hard to extend
+- [Granite IO Processing](https://github.com/ibm-granite/granite-io) provides an abstracted and easy to use library where you can specify the:
+  - Input to the model you want. For this example, basic prompt
+  - Output from the model. For this example, you specify you want reasoning with the response and the output is nicely parsed into different fields where you can process them esasier than one big piece of text
+- **Note:** In this example, the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library was used where input and output porocessor were used in one pipeline. In future releases, you will be able to use the input and output processor independently.
 
  
