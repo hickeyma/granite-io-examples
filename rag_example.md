@@ -1,6 +1,6 @@
 # Granite 3.2 RAG
 
-Granite 3.2 provided lots of cool capabilities like [chain-of-thought (CoT)](https://www.ibm.com/think/topics/chain-of-thoughts) reasoning, document understanding etc. In this example, we will investigate how to use [Retrieval Augmented Generation (RAG)](https://www.ibm.com/think/topics/retrieval-augmented-generation) to improve the response of the model. The example will first cover how to do RAG with the model in a vanilla fashion and then how to compliment it using the [granite-io library](https://github.com/ibm-granite/granite-io). I 
+Granite 3.2 provides lots of cool capabilities like [chain-of-thought (CoT)](https://www.ibm.com/think/topics/chain-of-thoughts) reasoning, document understanding etc. In this example, we will investigate how to use [Retrieval Augmented Generation (RAG)](https://www.ibm.com/think/topics/retrieval-augmented-generation) to improve the response of the model. The example will first cover how to do RAG with the model in a vanilla fashion and then how to compliment it using the [Granite IO processing](https://github.com/ibm-granite/granite-io) library. I 
 
 ## RAG Example
 
@@ -10,7 +10,8 @@ I am very proud of my sports team [Limerick](https://en.wikipedia.org/wiki/Limer
 - 6 Munster Titles
 - 3 national Leagues
 
-I decided then that it would be nice to ask `Granite 3.2 8b` model to confirm this dominance with the following question `What team is the most successful hurling team in the last 10 years?`.
+I decided then that it would be nice to ask the `Granite 3.2 8b` model to confirm this dominance with the following question `What team is the most successful hurling team in the last 10 years?`. Everyone likes to boast! ![image](https://github.com/user-attachments/assets/a751cf72-df29-4b9d-97ac-eb8c1cdf7c61)
+
 
 ### Prompt the model
 
@@ -54,9 +55,9 @@ I then remembered that Granite provides RAG capability. This got me excited that
 
 ### Prompt model with RAG
 
-This time when we ask the question `What team is the most successful hurling team in the last 10 years?`, lets add additional context from WikipediA and [Limerick county hurling team](https://en.wikipedia.org/wiki/Limerick_county_hurling_team) page.
+This time when we ask the question `What team is the most successful hurling team in the last 10 years?`, lets add additional context from Wikipedia and the [Limerick county hurling team](https://en.wikipedia.org/wiki/Limerick_county_hurling_team) page.
 
-I am going to use the following text from the WikipediA page:
+I am going to use the following text from the Wikipedia page:
 
 ```
 The 2018 season concluded with Limerick winning the 2018 All-Ireland SHC, the team's first since 1973, with a 3–16 to 2–18 point defeat of Galway in the final.The team built on this success, winning the NHL in 2019, 2020 and 2023,
@@ -100,7 +101,7 @@ for choice in result.choices:
     print(f"{choice.text}\n")
 ```
 
-Now the response from the model is far more appealing to me as the answer is accurate:
+Now the response from the model is far more appealing to me as the answer is fare moeaccurate:
 
 ```shell
 Based on the information provided, Limerick has been one of the most successful hurling teams in Ireland over the past decade. They won the All-Ireland Senior Hurling Championship (AHSC) in 2018 and then went on to win it again in 2020, 2021, and 2022 <co>1</co>. Additionally, they secured the National Hurling League (NHL) titles in 2019, 2020, 2023, and the Munster Senior Hurling Championship (MSHC) in 2019, 2020, 2021, and 2022. Their achievement of winning four consecutive AHSC titles from 2020 to 2023 places them among the elite hurling teams in history, alongside Cork's dominance in the 1940s and Kilkenny's in the 2000s.
@@ -109,9 +110,9 @@ Based on the information provided, Limerick has been one of the most successful 
 <co>1</co> Document 0: "The 2018 season concluded with Limerick winning the 2018 All-Ireland SHC, the team's first since 1973, with a 3–16 to 2–18 point defeat of Galway in the final.The team built on this success, winning the NHL in 2019, 2020 and 2023, the Munster SHC in 2019, 2020, 2021 and 2022 and the All-Ireland SHC again in 2020, 2021 and 2022. Munster Senior Hurling Championship 2023, All Ireland Hurling Championship 2023 to be forever remembered the team to join the Cork hurling Champions of the 40s and the Kilkenny hurling Champions of the 2000s to complete 4 in a row."
 ```
 
-The updated prompt show how to can provide RAG style socumentation as source to improve or optimize the model output. The promt also requests the citations of any sources used to improve the answer. 
+The updated prompt shows how you can provide RAG style documentation as source to improve or optimize the model output. The promt also requests the citations of any sources used to improve the answer. 
 
-However, in the code snippet above you can see that we had to make a substantial and intricate change to the prompt for the model to use RAG. This is not something we want to have to do every time.  Wouldn't it be great if we could be abstracted from this and only require to provide the question or basic prompt. This is where the [granite-io library](https://github.com/ibm-granite/granite-io) comes into play. Follow onto the next section to see how it can simplify your task.
+However, in the code snippet above you can see that we had to make a substantial and intricate change to the prompt for the model to use RAG. This is not something we want to have to do every time.  Wouldn't it be great if we could be abstracted from this and only require to provide the question or basic prompt. This is where the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library comes into play. Follow onto the next section to see how it can simplify your task.
 
 ### Use granite-io to help using RAG
 
@@ -202,10 +203,10 @@ The output is abstracted into its different parts of:
 
 - You can prompt a Granite 3.2 model providing RAG style documentation to help improve model output
 - However, this requires creating quite an unwielding prompt which is error prone and hard to extend
-- [Granite IO Processing](https://github.com/ibm-granite/granite-io) provides an abstracted and easy to use library where you can specify the:
+- [Granite IO Processing](https://github.com/ibm-granite/granite-io) library provides an abstracted and easy wayy where you can specify the:
   - Input to the model you want. For this example, basic prompt, document source
   - Output from the model. For this example, you specify you want citations and the output is nicelty parsed into different fields where you can process them esasier than one big piece of text
-- **Note:** In this example, the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library was used where input and output porocessor were used in one pipeline. In future releases, you will be able to use the input and output processor independently.
+- **Note:** In this example, the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library was used where input and output processor were used in one pipeline. In future releases, you will be able to use different input and output processors independently.
 
 
  
