@@ -51,7 +51,7 @@ However, it's important to note that sports results can change rapidly with each
 
 Granted Kilkenny are the greatest team of all time but not in the last 10 years. Also, there are hallucinations in the response as theier last title is in 2015 and not in 2016, 2019 and 2020.
 I put this down to the data the model was trained on and also some hallucination involved. It can't be perfect at everything, right?! However, this doesn't help my pride about my county. As I don't have the resources or time to retrain the model, I was wondering how I could set the record straight.
-I then remmembered that Granite 32. provides RAG capability. This got me think that I could supplement documentation RAG style inaddition to my prompt. Lets try this out in the nect section.
+I then remmembered that Granite 3.2 provides RAG capability. This got me think that I could supplement documentation RAG style inaddition to my prompt. Lets try this out in the next section.
 
 ### Prompt model with RAG
 
@@ -107,17 +107,20 @@ Now the response from the model is far more appealing to me as the answer is acc
 Based on the information provided, Limerick has been one of the most successful hurling teams in Ireland over the past decade. They won the All-Ireland Senior Hurling Championship (AHSC) in 2018 and then went on to win it again in 2020, 2021, and 2022 <co>1</co>. Additionally, they secured the National Hurling League (NHL) titles in 2019, 2020, 2023, and the Munster Senior Hurling Championship (MSHC) in 2019, 2020, 2021, and 2022. Their achievement of winning four consecutive AHSC titles from 2020 to 2023 places them among the elite hurling teams in history, alongside Cork's dominance in the 1940s and Kilkenny's in the 2000s.
 
 # Citations:
-<co>1</co> Document 0: "The 2018 season concluded with Limerick winning the 2018 All-Ireland SHC, the team's first since 1973, with a 3–16 to 2–18 point defeat of Galway in the final.The team built on this success, winning the NHL in 2019, 2020 and 2023, the Munster SHC in 2019, 2020, 2021 and 2022 and the All-Ireland SHC again in 2020, 2021 and 2022. Munster Senior Hurling Championship 2023, All Ireland Hurling Championship 2023 to be forever remembered the team to join the Cork hurling Champions of the 40s and the Kilkenny hurling Champions of the 2000s to complete 4 in a row."```
+<co>1</co> Document 0: "The 2018 season concluded with Limerick winning the 2018 All-Ireland SHC, the team's first since 1973, with a 3–16 to 2–18 point defeat of Galway in the final.The team built on this success, winning the NHL in 2019, 2020 and 2023, the Munster SHC in 2019, 2020, 2021 and 2022 and the All-Ireland SHC again in 2020, 2021 and 2022. Munster Senior Hurling Championship 2023, All Ireland Hurling Championship 2023 to be forever remembered the team to join the Cork hurling Champions of the 40s and the Kilkenny hurling Champions of the 2000s to complete 4 in a row."
+```
 
-Now,  we are given "Thinking" of the model behind the answer in-addition to the answer or response. Exactly what we asked for. 
+The output also provide citation of the source used to improve the answer. 
 
 However, in the code snippet above you can see that we had to make a substantial and intricate change to the prompt for the model to use RAG. This is not something we want to have to do every time.  Wouldn't it be great if we could be abstracted from this and only require to provide the question or prompt. This is where the [granite-io library](https://github.com/ibm-granite/granite-io) comes into play. Follow onto the next section to see how it can simplify your task.
 
-### Use granite-io to help prompting the model
+### Use granite-io to help using Rag in the model
 
 Lets now look at how the code snippet looks when using `granite-io` library to do the heavy lifting:
 
 ```
+import pprint
+
 from granite_io import make_backend, make_io_processor
 from granite_io.types import ChatCompletionInputs, UserMessage
 
@@ -125,50 +128,64 @@ model_name = "granite3.2:8b"
 io_processor = make_io_processor(
     model_name, backend=make_backend("openai", {"model_name": model_name})
 )
-question = "Find the fastest way for a seller to visit all the cities in their region"
+question = "What team is the most successful hurling team in the last 10 years?"
 messages = [UserMessage(content=question)]
 
-# With Thinking
+# Source: https://en.wikipedia.org/wiki/Limerick_county_hurling_team
+documents = [
+    {
+        "text": "The 2018 season concluded with Limerick winning the 2018 All-Ireland SHC, the team's first since 1973, with a 3–16 to 2–18 point defeat of Galway in the final.The team built on this success, winning the NHL in 2019, 2020 and 2023, the Munster SHC in 2019, 2020, 2021 and 2022 and the All-Ireland SHC again in 2020, 2021 and 2022. Munster Senior Hurling Championship 2023, All Ireland Hurling Championship 2023 to be forever remembered the team to join the Cork hurling Champions of the 40s and the Kilkenny hurling Champions of the 2000s to complete 4 in a row."  # noqa: E501
+    },
+]
+
+# With RAG and citations
 outputs = io_processor.create_chat_completion(
-    ChatCompletionInputs(messages=messages, thinking=True)
+    ChatCompletionInputs(
+        messages=messages,
+        documents=documents,
+        controls={"citations": True},
+    )
 )
-print("------ WITH THINKING ------")
-print(">> Thoughts:")
-print(outputs.results[0].next_message.reasoning_content)
-print(">> Response:")
-print(outputs.results[0].next_message.content)
+print("\n\n>> Model raw output:\n")
+response = outputs.results[0].next_message.raw
+print(response)
+
+print("\n\n>> Response:\n")
+response = outputs.results[0].next_message.content
+print(response)
+
+if outputs.results[0].next_message.citations:
+    print("\n\n>> Citations:\n")
+    pprint.pprint(outputs.results[0].next_message.citations, sort_dicts=False)
+
+    print("\n\n>> Documents:\n")
+    pprint.pprint(outputs.results[0].next_message.documents, sort_dicts=False)
 ```
 
-The output returned from the model can now be broken up, thanks to how the library returns it:
+The output returned from the model can now be broken up, thanks to how the library returns the response:
 
 ```shell
------- WITH THINKING ------
+>> Model raw output:
 
->> Thoughts:
-This problem seems to be a variant of the well-known Traveling Salesman Problem (TSP), which involves finding the shortest possible route that visits each city once and returns to the origin. However, the question asks for the "fastest" way, which suggests we might need to consider additional factors like road conditions, traffic patterns, real-time updates, etc., than just geographical distance. 
+Based on the documents provided, Limerick has been one of the most successful hurling teams in the last decade. Over the course of several seasons, they have won numerous championships including the Munster SHC (in 2019, 2020, 2021, and 2022) and the All-Ireland SHC (in 2020, 2021, and 2022). Additionally, they won the National Hurling League (NHL) in 2019, 2020, 2023. However, to definitively say which team is the most successful in the past 10 years, information on other teams' achievements would be necessary <co>1</co>.
 
-To solve this effectively, I'd need to incorporate elements of optimization algorithms (like Genetic Algorithms or Ant Colony Optimization typically used for TSP), real-time data feed integration (for traffic information), and perhaps machine learning models to predict optimal routes based on historical data.
+# Citations:
+<co>1</co> Document 0: "The 2018 season concluded with Limerick winning the 2018 All-Ireland SHC, the team's first since 1973, with a 3–16 to 2–18 point defeat of Galway in the final.The team built on this success, winning the NHL in 2019, 2020 and 2023, the Munster SHC in 2019, 2020, 2021 and 2022 and the All-Ireland SHC again in 2020, 2021 and 2022. Munster Senior Hurling Championship 2023, All Ireland Hurling Championship 2023 to be forever remembered the team to join the Cork hurling Champions of the 40s and the Kilkenny hurling Champions of the 2000s to complete 4 in a row."
 
-Given the complexity, creating a fully functional system would require developing software and integrating various APIs, which is beyond the scope of this platform. Instead, I'll outline a high-level approach and suggest existing tools or services that can be utilized.
 
 >> Response:
-To find the fastest way for a seller to visit all cities in their region, you'd essentially want to solve a variant of the Traveling Salesman Problem (TSP), considering factors beyond just geographical distance such as real-time traffic conditions. Here’s a high-level approach to tackle this:
 
-1. **Data Collection**: Gather data for all cities in the region including their exact locations (latitude and longitude) and any initial known information about road infrastructure. 
+Based on the documents provided, Limerick has been one of the most successful hurling teams in the last decade. Over the course of several seasons, they have won numerous championships including the Munster SHC (in 2019, 2020, 2021, and 2022) and the All-Ireland SHC (in 2020, 2021, and 2022). Additionally, they won the National Hurling League (NHL) in 2019, 2020, 2023. However, to definitively say which team is the most successful in the past 10 years, information on other teams' achievements would be necessary.
 
-2. **Real-Time Traffic Integration**: Incorporate real-time traffic data. This can be achieved by integrating APIs from services like Google Maps API, HERE Routing API, or OpenStreetMap with Overpass Turbo, which all offer robust traffic and route optimization features. These tools not only provide distance and time for different routes but also account for current traffic conditions.
 
-3. **Historical Traffic Data**: Utilize historical data to predict future traffic patterns. Machine learning models, such as regression or neural network models, can be trained on past traffic data to forecast optimal travel times at different times of the day/week.
+>> Citations:
 
-4. **Route Optimization Algorithm**: Implement an optimization algorithm. Genetic Algorithms, Ant Colony Optimization, or even simpler algorithms like nearest neighbor combined with 2-opt improvement can be used here. These will help in finding the most efficient route considering traffic conditions and possibly other constraints (like avoiding toll roads, certain routes due to construction etc.).
+[Citation(citation_id='1', doc_id='0', context_text="The 2018 season concluded with Limerick winning the 2018 All-Ireland SHC, the team's first since 1973, with a 3–16 to 2–18 point defeat of Galway in the final.The team built on this success, winning the NHL in 2019, 2020 and 2023, the Munster SHC in 2019, 2020, 2021 and 2022 and the All-Ireland SHC again in 2020, 2021 and 2022. Munster Senior Hurling Championship 2023, All Ireland Hurling Championship 2023 to be forever remembered the team to join the Cork hurling Champions of the 40s and the Kilkenny hurling Champions of the 2000s to complete 4 in a row.", context_begin=0, context_end=561, response_text="However, to definitively say which team is the most successful in the past 10 years, information on other teams' achievements would be necessary.", response_begin=372, response_end=517)]
 
-5. **Iterative Refinement**: Start with a preliminary route, perhaps generated by a heuristic method (like nearest neighbor), then iteratively refine it using the optimization algorithm, recalculating based on updated real-time traffic information.
 
-6. **Consider Vehicle Specifics**: If possible, factor in specific vehicle details like average speed, fuel efficiency (to minimize stops) if aiming to minimize travel time/cost instead of just distance.
+>> Documents:
 
-7. **User Interface**: Finally, create a user-friendly interface where the seller can input destinations and receive optimized routes. This could be a mobile app or a web application, providing options like daily re-planning based on updated traffic forecasts.
-
-While it's not feasible to develop such a system in this text-based environment, the outlined strategy provides a roadmap for software developers looking to create a solution for efficient city-to-city travel planning, integrating real-time data and optimization techniques.
+[Document(doc_id='0', text="The 2018 season concluded with Limerick winning the 2018 All-Ireland SHC, the team's first since 1973, with a 3–16 to 2–18 point defeat of Galway in the final.The team built on this success, winning the NHL in 2019, 2020 and 2023, the Munster SHC in 2019, 2020, 2021 and 2022 and the All-Ireland SHC again in 2020, 2021 and 2022. Munster Senior Hurling Championship 2023, All Ireland Hurling Championship 2023 to be forever remembered the team to join the Cork hurling Champions of the 40s and the Kilkenny hurling Champions of the 2000s to complete 4 in a row.")]
 ```
 
 ## What value does the `granite-io` library give you?
