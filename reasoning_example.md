@@ -1,6 +1,6 @@
 # Granite 3.2 Reasoning
 
-Granite 3.2 provided lots of cool capabilities like [chain-of-thought (CoT)](https://www.ibm.com/think/topics/chain-of-thoughts) reasoning, document understanding etc. In this example, we will investigate how to use
+Granite 3.2 provides lots of cool capabilities like [chain-of-thought (CoT)](https://www.ibm.com/think/topics/chain-of-thoughts) reasoning, document understanding etc. In this example, we will investigate how to use
 CoT reasoning to underastnd better how the model answered a query. The example will first cover how to do reasoning with the model in a vanilla fashion and then how to simplify it using the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library.
 
 ## Reasoning Example
@@ -237,6 +237,6 @@ The output is abstracted into its different parts of:
 - [Granite IO Processing](https://github.com/ibm-granite/granite-io) provides an abstracted and easy to use library where you can specify the:
   - Input to the model you want. For this example, basic prompt
   - Output from the model. For this example, you specify you want reasoning with the response and the output is nicely parsed into different fields where you can process them esasier than one big piece of text
-- **Note:** In this example, the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library was used where input and output porocessor were used in one pipeline. In future releases, you will be able to use the input and output processor independently.
+- **Note:** In this example, the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library was used where input and output porocessors were used in one pipeline. In future releases, you will be able to use different input and output processors independently.
 
  
