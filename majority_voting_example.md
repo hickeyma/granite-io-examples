@@ -1,13 +1,12 @@
 # Granite 3.2 Majority Voting
 
-Granite 3.2 provides lots of cool capabilities like [chain-of-thought (CoT)](https://www.ibm.com/think/topics/chain-of-thoughts) reasoning, document understanding etc. In this example, we will investigate how to use
-majority voting to fins the best possible answer when receiving multiple answers (mulit completions) per prompt. The example will first cover how to get mutliple answers from a model in a vanilla fashion and then how to improve on getting the best answer using the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library.
+Granite 3.2 provides lots of cool capabilities like [chain-of-thought (CoT)](https://www.ibm.com/think/topics/chain-of-thoughts) reasoning, document understanding etc. In this example, we will investigate how to use majority voting to find the best possible answer from multiple answers (multi-completion) per prompt. The example will first cover how to get mutliple answers from a model in a vanilla fashion and then how to improve on getting the best answer using the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library.
 
 ## Majority Voting Example
 
-Large Language Models (LLMs) can perform a lot of tasks really well but maths sometimes is not one of them. Yes, you could get a specially trained model for maths. If however you don't have such a model, wouldn't it be great to be able to use a standard model. If we know that the model we are using may not always provide the correct answer to some maths problem, we then need to find a way where we can guide it. One such way is to ask the model to run the prompt a number of times and this is called multi-completions. Instead of getting one answer from the model we will get multiple. We can then compare to see which answer looks best or more common.
+Large Language Models (LLMs) can perform a lot of tasks really well but maths sometimes is not one of them. Yes, you could get a specially trained model for maths. If however you don't have such a model, wouldn't it be great to be able to use a standard model. If we know that the model we are using may not always provide the correct answer to some maths problem, we then need to find a way where we can guide it. One such way is to ask the model to run the prompt a number of times and this is called multi-completions. Instead of getting one answer from the model we will get multiple. We can then compare to see which answer looks best or most correct.
 
-To try this concept, Lets ask `Granite 3.2 8b` model the following question `What is 234651 + 13425?\nAnswer with just a number please.` and then work towards how to to get the best/most accurate answer. 
+To try this concept, lets ask `Granite 3.2 8b` model the following question `What is 234651 + 13425?` and then work towards how to to get the best/most accurate answer. 
 
 ### Prompt the model
 
@@ -44,7 +43,7 @@ for choice in result.choices:
     num_result += 1
 ```
 
-The model will generate output similar to the following (this can vary a lot per run):
+The model will generate output similar to the following (this can potentially vary a lot per run):
 
 ```shell
 **Result 1**: 
@@ -293,7 +292,7 @@ However, in the code snippet above you can see that we had to make a substantial
 
 ### Use granite-io to help with choosing the correct answer
 
-Here is how the code snippet looks when using `granite-io` library to do the heavy lifting:
+Here is how the code snippet looks when using the `granite-io` library to do the heavy lifting:
 
 ```
 """
@@ -356,16 +355,16 @@ The output returned from the model is now as follows:
 **Result 1**: 248076
 ```
 
-The output now just contains the 1 answer which is the answer as selected by majority voting on the 20 answers as returned by the model. It is also proving to be the correct answer.
+The output now just contains the 1 answer which is the answer as selected by majority voting on the 20 answers as returned by the model. It is also proving to be the correct answer. That simplifies my job! 
 
 ## Conclusion
 
 - You can prompt a Granite 3.2 model asking to return answers on a task that it is not best trained for
 - However, this requires creating quite an unwielding prompt which is error prone and hard to extend
-- It also requires parsing of different outputs to arrivae a best/correct answer
-- [Granite IO Processing](https://github.com/ibm-granite/granite-io) provides an abstracted and easy to use library where you can specify the:
+- It also requires parsing of different outputs to arrive at best/correct answer
+- [Granite IO Processing](https://github.com/ibm-granite/granite-io) provides an abstracted and easy to use the library where you can specify the:
   - Input to the model you want. For this example, basic prompt
-  - Output from the model. For this example, you perform majority voting on multiple answers, return the majority answer
-- **Note:** In this example, the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library was used where input and output porocessors were used in one pipeline. In future releases, you will be able to use different input and output processors independently.
+  - Output from the model. For this example, you perform majority voting on multiple answers, and return the majority answer
+
 
  
