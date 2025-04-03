@@ -206,7 +206,6 @@ The output is abstracted into its different parts of:
 - [Granite IO Processing](https://github.com/ibm-granite/granite-io) library provides an abstracted and easy wayy where you can specify the:
   - Input to the model you want. For this example, basic prompt, document source
   - Output from the model. For this example, you specify you want citations and the output is nicelty parsed into different fields where you can process them esasier than one big piece of text
-- **Note:** In this example, the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library was used where input and output processor were used in one pipeline. In future releases, you will be able to use different input and output processors independently.
 
 
  
