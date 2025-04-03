@@ -237,6 +237,5 @@ The output is abstracted into its different parts of:
 - [Granite IO Processing](https://github.com/ibm-granite/granite-io) provides an abstracted and easy to use library where you can specify the:
   - Input to the model you want. For this example, basic prompt
   - Output from the model. For this example, you specify you want reasoning with the response and the output is nicely parsed into different fields where you can process them esasier than one big piece of text
-- **Note:** In this example, the [Granite IO Processing](https://github.com/ibm-granite/granite-io) library was used where input and output porocessors were used in one pipeline. In future releases, you will be able to use different input and output processors independently.
 
  
