@@ -35,75 +35,90 @@ result = openai_client.completions.create(
     temperature=0.6,
     max_tokens=1024,
 )
-results = []
-print("\n\n")
-num_result = 1
-for choice in result.choices:
-    print(f"**Result {num_result}**: {choice.text}")
-    num_result += 1
+for result_num, res in enumerate(result.choices):
+    print(f"{result_num + 1}: {res.text}\n")
 ```
 
 The model will generate output similar to the following (this can potentially vary a lot per run):
 
 ```shell
-**Result 1**: 
+1: 
 
 468906
-**Result 2**: 
+
+2: 
 
 369176
-**Result 3**: 
+
+3: 
 
 248076
-**Result 4**: 
+
+4: 
 
 368906
-**Result 5**: 
+
+5: 
 
 468906
-**Result 6**: 
+
+6: 
 
 358976
-**Result 7**: 
+
+7: 
 
 468906
-**Result 8**: 
+
+8: 
 
 368876
-**Result 9**: 
+
+9: 
 
 368906
-**Result 10**: 
+
+10: 
 
 369176
-**Result 11**: 
+
+11: 
 
 368876
-**Result 12**: 
+
+12: 
 
 468906
-**Result 13**: 
+
+13: 
 
 568906
-**Result 14**: 
+
+14: 
 
 468906
-**Result 15**: 
+
+15: 
 
 568906
-**Result 16**: 
+
+16: 
 
 568906
-**Result 17**: 
+
+17: 
 
 368876
-**Result 18**: 
+
+18: 
 
 368976
-**Result 19**: 
+
+19: 
 
 369176
-**Result 20**: 
+
+20: 
 
 369176
 ```
@@ -137,9 +152,9 @@ openai_client = openai.OpenAI(
 
 #prompt = "What is 234651 + 13425?\nAnswer with just a number please."
 prompt = """<|start_of_role|>system<|end_of_role|>Knowledge Cutoff Date: April 2024.
-Today's Date: April 02, 2025.
+Today's Date: April 07, 2025.
 You are Granite, developed by IBM. You are a helpful AI assistant.
-Respond to every user query in a comprehensive and detailed way. The response should summarize the thought process. Write your thoughts after 'Here is my thought process:' and write your response after 'Here is my response:' and within '<answer>' and  '</answer>.' Only give me a single thought and a single final response, nothing else.<|end_of_text|>
+Respond to every user query in a comprehensive and detailed way. You can write down your thoughts and reasoning process before responding. In the thought process, engage in a comprehensive cycle of analysis, summarization, exploration, reassessment, reflection, backtracing, and iteration to develop well-considered thinking process. In the response section, based on various attempts, explorations, and reflections from the thoughts section, systematically present the final solution that you deem correct. The response should summarize the thought process. Write your thoughts after 'Here is my thought process:' and write your response after 'Here is my response:' for each user query.<|end_of_text|>
 <|start_of_role|>user<|end_of_role|>What is 234651 + 13425?
 Answer with just a number please.<|end_of_text|>
 <|start_of_role|>assistant<|end_of_role|>"""
@@ -151,139 +166,116 @@ result = openai_client.completions.create(
     temperature=0.6,
     max_tokens=1024,
 )
-results = []
-print("\n\n")
-num_result = 1
-for choice in result.choices:
-    print(f"**Result {num_result}**: {choice.text}")
-    num_result += 1
+for result_num, res in enumerate(result.choices):
+    print(f"{result_num + 1}: {res.text}\n")
 ```
 
 Now the response from the model contains more context on the answer :
 
 ```shell
-**Result 1**: Here is my thought process:
-The task is to add two numbers, 234651 and 13425, and provide the sum as a standalone numerical answer.
+1: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add 234651 and 13425 together. 
 
-Here is my response:
+Here is my response: 248076
 
-<answer>248076</answer>
-**Result 2**: Here is my thought process:
-The task is to calculate the sum of two numbers, 234651 and 13425. I need to add these numbers together.
+2: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add 234651 and 13425 together. 
 
-Here is my response:
+Here is my response: 248076
 
-<answer>248076</answer>
-**Result 3**: Here is my thought process:
-The task is to add two numbers, 234651 and 13425, and provide the sum as a standalone number.
+3: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add 234651 and 13425 together. 
 
-Here is my response:
+Here is my response: 248076
 
-<answer>248076</answer>
-**Result 4**: Here is my thought process:
-To find the sum of 234651 and 13425, we need to add these two numbers together.
+4: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add the two numbers 234651 and 13425 together. 
 
-Here is my response:
+Here is my response: 248076
 
-<answer>248076</answer>
-**Result 5**: Here is my thought process:
-The task requires me to calculate the sum of two numbers, 234651 and 13425. I will add these two numbers together to get the result.
+5: Here is my thought process:
+The task is to add two numbers, 234651 and 13425, and provide the result. This is a straightforward arithmetic operation.
 
-Here is my response:
+Here is my response: 
 
-<answer>248076</answer>
-**Result 6**: Here is my thought process:
-To find the sum of 234651 and 13425, we need to add these two numbers together.
+235996
 
-Here is my response:
+6: Here is my thought process:
+The task is to add two numbers, 234651 and 13425, and provide the sum as a standalone numerical answer. 
 
-<answer>348076</answer>
-**Result 7**: Here is my thought process:
-The task is to add two numbers, 234651 and 13425, and provide the result.
+Here is my response: 
 
-Here is my response:
+248076
 
-<answer>248076</answer>
-**Result 8**: Here is my thought process:
-To find the sum, we need to add 234651 and 13425 together.
+7: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add the two numbers 234651 and 13425 together. 
 
-Here is my response:
+Here is my response: 248076
 
-<answer>248076</answer>
-**Result 9**: Here is my thought process:
-To find the answer, we need to add the two numbers together.
+8: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add 234651 and 13425 together. 
 
-Here is my response:
+Here is my response: 248076
 
-1010266
+9: Here is my thought process:
+This is a simple arithmetic addition problem. The task requires me to calculate the sum of 234651 and 13425. 
 
-</answer>
-**Result 10**: Here is my thought process:
-The task is to calculate the sum of two numbers, 234651 and 13425. I need to perform addition to find the result.
+Here is my response: 248076
 
-Here is my response:
+10: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add the two numbers 234651 and 13425. 
 
-<answer>248076</answer>
-**Result 11**: Here is my thought process:
-To find the sum, we need to add 234651 and 13425.
+Here is my response: 248076
 
-Here is my response:
+11: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add the two numbers 234651 and 13425 together. 
 
-<answer>248076</answer>
-**Result 12**: Here is my thought process:
-The question is asking for the sum of two numbers, 234651 and 13425. To find the answer, we need to add these two numbers together.
+Here is my response: 248076
 
-Here is my response:
+12: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add the two numbers 234651 and 13425. 
 
-<answer>248076</answer>
-**Result 13**: Here is my thought process:
-To find the sum of 234651 and 13425, we need to add these two numbers together.
+Here is my response: 248076
 
-Here is my response:
+13: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add the two numbers 234651 and 13425 together. 
 
-<answer>248076</answer>
-**Result 14**: Here is my thought process:
-To find the sum of 234651 and 13425, we need to add these two numbers together.
+Here is my response: 248076
 
-Here is my response:
+14: Here is my thought process:
+The task is to add two numbers, 234651 and 13425, and provide the result. This is a simple arithmetic operation that can be directly calculated.
 
-<answer>248076</answer>
-**Result 15**: Here is my thought process:
-To find the sum of 234651 and 13425, we need to add these two numbers together.
+Here is my response: 248076
 
-Here is my response:
+15: Here is my thought process:
+The user is asking for the sum of two numbers, 234651 and 13425. This is a straightforward arithmetic addition problem. I just need to perform the calculation and provide the result.
 
-<answer>248076</answer>
-**Result 16**: Here is my thought process:
-To find the sum of 234651 and 13425, we need to add these two numbers together.
+Here is my response: 248076
 
-Here is my response:
+16: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add the two numbers 234651 and 13425. 
 
-<answer>248076</answer>
-**Result 17**: Here is my thought process:
-The question is asking to add two numbers: 234651 and 13425. The task is to perform this arithmetic operation and provide the final sum.
+Here is my response: 248076
 
-Here is my response:
+17: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add the two numbers 234651 and 13425. 
 
-<answer>248076</answer>
-**Result 18**: Here is my thought process:
-To find the sum of 234651 and 13425, we need to add these two numbers together.
+Here is my response: 248076
 
-Here is my response:
+18: Here is my thought process:
+This is a simple arithmetic addition problem. I need to add the two numbers 234651 and 13425. 
 
-<answer>248076</answer>
-**Result 19**: Here is my thought process:
-To find the sum, we need to add 234651 and 13425.
+Here is my response: 248076
 
-Here is my response:
+19: Here is my thought process:
+The user is asking for a simple arithmetic addition. I need to add 234651 and 13425, and then provide the result as a single number.
 
-<answer>248076</answer>
-**Result 20**: Here is my thought process:
-The task is to calculate the sum of two numbers, 234651 and 13425. I need to perform addition to find the result.
+Here is my response: 248076
 
-Here is my response:
+20: Here is my thought process:
+The user is asking for a simple arithmetic addition. I need to calculate the sum of 234651 and 13425. 
 
-<answer>248076</answer>
+Here is my response: 248076
 ```
 
 The updated prompt shows a marked improvement on the previous prompt with just a few hallucinations (incorrect answers) this time.
@@ -295,16 +287,19 @@ However, in the code snippet above you can see that we had to make a substantial
 Here is how the code snippet looks when using the `granite-io` library to do the heavy lifting:
 
 ```
+# SPDX-License-Identifier: Apache-2.0
+
 """
 This example show how to infer or call a model using the framework and an Ollama
 backend to serve the model.
 
-It uses majority voting to decide on best answer to use from number of model sample
-outputs.
+It uses MBRD and ROUGE scoring for majority voting to decide on best answer to use
+from number of model sample outputs.
 """
 
 # Local
 from granite_io import make_backend, make_io_processor
+from granite_io.io.voting import MBRDMajorityVotingProcessor
 from granite_io.types import ChatCompletionInputs, UserMessage
 
 # By default the backend is an Ollama server running locally using default url. Ollama
@@ -315,7 +310,7 @@ from granite_io.types import ChatCompletionInputs, UserMessage
 model_name = "granite3.2:8b"
 # openai_base_url = ""
 # openai_api_key = ""
-io_processor = make_io_processor(
+base_processor = make_io_processor(
     model_name,
     backend=make_backend(
         "openai",
@@ -328,31 +323,35 @@ io_processor = make_io_processor(
 )
 question = "What is 234651 + 13425?\nAnswer with just a number please."
 messages = [UserMessage(content=question)]
-outputs = io_processor.create_chat_completion(
-    ChatCompletionInputs(
-        messages=messages,
-        majority_voting=True,
-        generate_inputs={"n": 20, "temperature": 0.6, "max_tokens": 1024},
-    )
+completion_inputs = ChatCompletionInputs(
+    messages=messages,
+    thinking=True,
+    generate_inputs={"n": 20, "temperature": 0.6, "max_tokens": 1024},
 )
-print("------ WITH MAJORITY VOTING ------")
-# There will be only 1 output because majority voting is performed
-# on all completions results
-num_result = 1
-for result in outputs.results:
-    print(f"**Result {num_result}**: {result.next_message.content}")
-    num_result += 1
+voting_processor = MBRDMajorityVotingProcessor(base_processor)
+results = voting_processor.create_chat_completion(completion_inputs)
+print("Output from base model augmented with MBRD majority voting:")
+# This should be only one output, the majority voted answer
+for result_num, r in enumerate(results.results):
+    print(f"{result_num + 1}: {r.next_message.content}")
+
+# What's the actual answer?
+print(f"---------\nThe actual answer is: {234651 + 13425}")
 ```
 
 Gone is the long unwielding prompt to be replaced by a more easily maintable and understandable way to:
 - Set the prompt
-- Request majority voting (`majority_voting=true`)
+- Use `MBRDMajorityVotingProcessor` class to perform majority voting using [Minimum Bayesian Risk Decoding (MBRD)](https://arxiv.org/abs/2310.01387).
+- It means you can perform inference on model of your choice and use majority voting to return the majority answer (flow is chained)
+- Other majority voting is supported like simple majority voting which normalizes answers to integers and grouping most populare answer
 
 The output returned from the model is now as follows:
 
 ```shell
------- WITH MAJORITY VOTING ------
-**Result 1**: 248076
+Output from base model augmented with MBRD majority voting:
+1: 248076
+---------
+The actual answer is: 248076
 ```
 
 The output now just contains the 1 answer which is the answer as selected by majority voting on the 20 answers as returned by the model. It is also proving to be the correct answer. That simplifies my job! 
